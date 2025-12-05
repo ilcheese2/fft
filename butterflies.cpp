@@ -54,7 +54,7 @@ void butterfly2(float* reals, float* imags, int sampleCount) {
     }
 }
 
-void butterfly4(float* reals, float* imags, int sampleCount) {
+void butterfly4(float* reals, float* __restrict__ imags, int sampleCount) {
     for (int i = 0; i < sampleCount; i+=4) {
         float a = reals[i];
         float a_im = imags[i];
@@ -88,8 +88,8 @@ void butterfly(float* reals, float* imags, const float* twiddle_reals, const flo
             float32x4_t real1 = vld1q_f32(reals + i + j + len/2);
             float32x4_t imag0 = vld1q_f32(imags + i + j);
             float32x4_t imag1 = vld1q_f32(imags + i + j + len/2);
-            float32x4_t twiddle_real = vld1q_f32(twiddle_reals + i + j);
-            float32x4_t twiddle_imag = vld1q_f32(twiddle_imags + i + j);
+            float32x4_t twiddle_real = vld1q_f32(twiddle_reals + j);
+            float32x4_t twiddle_imag = vld1q_f32(twiddle_imags + j);
 
             float32x4_t temp0_real = vfmsq_f32(vfmaq_f32(real0, twiddle_real, real1), twiddle_imag, imag1);
             float32x4_t temp0_imag = vfmaq_f32(vfmaq_f32(imag0, twiddle_real, imag1), twiddle_imag, real1);
