@@ -54,7 +54,7 @@ void butterfly2(float* reals, float* imags, int sampleCount) {
     }
 }
 
-void butterfly4(float* reals, float* __restrict__ imags, int sampleCount) {
+void butterfly4(float* reals, float* imags, int sampleCount) {
     for (int i = 0; i < sampleCount; i+=4) {
         float a = reals[i];
         float a_im = imags[i];
@@ -147,14 +147,27 @@ void fft(float* reals, float* imags, int offset, const Twiddles& twiddles, int s
 }
 
 void do_fft(float* reals, float* imags, int sampleCount) {
+    assert(((sampleCount & (sampleCount - 1)) == 0));
     Twiddles twiddles = generate_twiddles(sampleCount);
     bit_reverse(reals, sampleCount);
     bit_reverse(imags, sampleCount);
     fft(reals, imags, 0, twiddles, sampleCount);
 }
 
-void do_fft_precomputed(float* reals, float* imags, const Twiddles& twiddles,  int sampleCount) {
+Precomputed precompute_fft_factors(int sampleCount) {
+    std::vector<float> window(sampleCount);
+    for (int i = 0; i < sampleCount; ++i) {
+        window[i] = 0.5 * (1 - cos(2 * M_PI * i / (sampleCount - 1)));
+    }
+    return { generate_twiddles(sampleCount), window };
+}
+
+void do_real_fft_precomputed(float* reals, float* imags, const Precomputed& precomputed, int sampleCount) {
     bit_reverse(reals, sampleCount);
-    bit_reverse(imags, sampleCount);
-    fft(reals, imags, 0, twiddles, sampleCount);
+    
+    for (int i = 0; i < sampleCount; i++) {
+        reals[i] *= precomputed.window[i];
+    }
+
+    fft(reals, imags, 0, precomputed.twiddles, sampleCount);
 }
