@@ -54,7 +54,7 @@ void butterfly2(float* reals, float* imags, int sampleCount) {
     }
 }
 
-void butterfly4(float* reals, float* imags, int sampleCount) {
+void butterfly4(float* reals, float* __restrict__ imags, int sampleCount) {
     for (int i = 0; i < sampleCount; i+=4) {
         float a = reals[i];
         float a_im = imags[i];

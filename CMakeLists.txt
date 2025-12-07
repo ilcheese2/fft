@@ -4,7 +4,7 @@ project(untitled LANGUAGES CXX OBJCXX)
 set(CMAKE_CXX_STANDARD 20)
 
 add_library(untitled SHARED
-        hook.mm
+        main.mm
         butterflies.cpp
         butterflies.h)
 
